@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>장바구니</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/products}">Shop</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="nav" class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/products}">상품</a></li>
+                <li class="nav-item"><a class="nav-link active" th:href="@{/cart}">장바구니</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h3 mb-0">장바구니</h1>
+        <a class="btn btn-outline-primary" th:href="@{/products}">계속 쇼핑</a>
+    </div>
+
+    <div class="table-responsive shadow-sm">
+        <table class="table table-hover align-middle bg-white">
+            <thead class="table-light">
+            <tr>
+                <th style="width:80px;">ID</th>
+                <th>상품명</th>
+                <th style="width:140px;">단가</th>
+                <th style="width:220px;">수량</th>
+                <th style="width:140px;">합계</th>
+                <th style="width:120px;">작업</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="i : ${items}">
+                <td th:text="${i.id}">1</td>
+                <td th:text="${i.productName}">청바지</td>
+                <td th:text="'₩' + ${#numbers.formatInteger(i.unitPrice, 3, 'COMMA')}">₩39,000</td>
+                <td>
+                    <form th:action="@{/cart/update}" method="post" class="d-inline">
+                        <!-- Spring Security 사용 시 아래 주석 해제
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        -->
+                        <input type="hidden" name="id" th:value="${i.id}">
+                        <div class="input-group">
+                            <button class="btn btn-outline-secondary" type="button"
+                                    onclick="const q=this.nextElementSibling; q.stepDown(); q.form.requestSubmit();">-</button>
+                            <input class="form-control text-center" type="number" name="qty" th:value="${i.quantity}" min="1">
+                            <button class="btn btn-outline-secondary" type="button"
+                                    onclick="const q=this.previousElementSibling; q.stepUp(); q.form.requestSubmit();">+</button>
+                            <button class="btn btn-primary" type="submit">수정</button>
+                        </div>
+                    </form>
+                </td>
+                <td th:text="'₩' + ${#numbers.formatInteger(i.lineTotal, 3, 'COMMA')}">₩39,000</td>
+                <td>
+                    <form th:action="@{/cart/delete}" method="post" class="d-inline"
+                          onsubmit="return confirm('삭제하시겠습니까?');">
+                        <!-- CSRF 필요 시 주석 해제
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        -->
+                        <input type="hidden" name="id" th:value="${i.id}">
+                        <button class="btn btn-outline-danger" type="submit">삭제</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr class="table-light">
+                <td colspan="4" class="text-end fw-bold">총액</td>
+                <td colspan="2" class="fw-bold" th:text="'₩' + ${#numbers.formatInteger(total, 3, 'COMMA')}">₩0</td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="d-flex gap-2 mt-3">
+        <form th:action="@{/cart/clear}" method="post"
+              onsubmit="return confirm('장바구니를 비울까요?');">
+            <!-- CSRF 필요 시 주석 해제
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            -->
+            <button class="btn btn-outline-secondary" type="submit">장바구니 비우기</button>
+        </form>
+        <a class="btn btn-primary" th:href="@{/products}">계속 쇼핑</a>
+    </div>
+</main>
+
+<footer class="border-top bg-white">
+    <div class="container py-3 text-center text-muted small">© Shop</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

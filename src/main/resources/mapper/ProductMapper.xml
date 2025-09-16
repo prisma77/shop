@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.multi.shop.mapper.ProductMapper">
+
+    <resultMap id="productMap" type="com.multi.shop.domain.Product">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="price" column="price"/>
+        <result property="stock" column="stock"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="productMap">
+        SELECT id, name, price, stock, description
+        FROM product
+        ORDER BY id DESC
+    </select>
+
+    <select id="findById" resultMap="productMap">
+        SELECT id, name, price, stock, description
+        FROM product
+        WHERE id = #{id}
+    </select>
+
+    <!-- 재고 차감 (장바구니는 보통 결제 시 차감하지만, 예제용으로 옵션 제공) -->
+    <update id="decreaseStock">
+        UPDATE product
+        SET stock = stock - #{qty}
+        WHERE id = #{id} AND stock >= #{qty}
+    </update>
+
+</mapper>
+
